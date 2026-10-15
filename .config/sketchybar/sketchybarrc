@@ -1,0 +1,231 @@
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+# Floating rounded bar with a gap from the screen edges
+sketchybar --bar position=bottom \
+                 height=36 \
+                 margin=12 \
+                 y_offset=5 \
+                 corner_radius=12 \
+                 padding_left=6 \
+                 padding_right=6 \
+                 color=0xe6141221 \
+                 border_width=1 \
+                 border_color=0x30d4adfc \
+                 blur_radius=30
+
+# The portrait (vertical) monitor gets a compact bar. Find it by shape so
+# it keeps working if the screen order changes. VERTICAL / OTHERS are
+# SketchyBar display numbers, e.g. "2" and "1,3".
+DISPLAYS="$(sketchybar --query displays | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+v = [str(x["arrangement-id"]) for x in d if x["frame"]["h"] > x["frame"]["w"]]
+o = [str(x["arrangement-id"]) for x in d if x["frame"]["h"] <= x["frame"]["w"]]
+print(",".join(v) or "none", ",".join(o) or "all")')"
+VERTICAL="${DISPLAYS% *}"
+OTHERS="${DISPLAYS#* }"
+# Island (group) background
+ISLAND=(background.color=0xff2b2442 background.corner_radius=8 background.height=26 background.drawing=on)
+
+sketchybar --add event aerospace_workspace_change
+for sid in $(aerospace list-workspaces --all); do
+    sketchybar --add item space.$sid center \
+        --set space.$sid \
+	icon="$sid" \
+	icon.font="UbuntuMono Nerd Font:Bold:14.0" \
+	icon.padding_left=8 \
+	icon.padding_right=5 \
+	label.font="sketchybar-app-font:Regular:12.0" \
+	label.color=0xffd4adfc \
+	label.padding_right=8 \
+	label.y_offset=0 \
+	padding_left=3 \
+	padding_right=3 \
+        background.color=0x00d4adfc \
+        background.corner_radius=1 \
+        background.height=2 \
+        background.y_offset=-11 \
+        background.drawing=on \
+        click_script="aerospace workspace $sid"
+done
+
+# One hidden item refreshes all workspaces (monitor, apps, highlight)
+sketchybar --add item workspaces center \
+           --set workspaces drawing=off updates=on script="$CONFIG_DIR/plugins/workspaces.sh" \
+           --subscribe workspaces aerospace_workspace_change front_app_switched \
+                                  space_windows_change display_change system_woke
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="UbuntuMono Nerd Font:Bold:16.0"
+  label.font="UbuntuMono Nerd Font:Bold:14.0"
+  icon.color=0xff9d86e9
+  label.color=0xffd4adfc
+  icon.padding_left=2
+  icon.padding_right=2
+  label.padding_left=2
+  label.padding_right=2
+)
+sketchybar --default "${default[@]}"
+
+##### Adding Mission Control Space Indicators #####
+# Let's add some mission control spaces:
+# https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
+# to indicate active and available mission control spaces.
+
+#SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
+#for i in "${!SPACE_ICONS[@]}"
+#do
+#  sid="$(($i+1))"
+#  space=(
+#    space="$sid"
+#    icon="${SPACE_ICONS[i]}"
+#    icon.padding_left=7
+#    icon.padding_right=7
+#    background.color=0x40ffffff
+#    background.corner_radius=5
+#    background.height=25
+#    label.drawing=off
+#    script="$PLUGIN_DIR/space.sh"
+#    click_script="yabai -m space --focus $sid"
+#  )
+#  sketchybar --add space space."$sid" left --set space."$sid" "${space[@]}"
+#done
+
+##### Adding Left Items #####
+# We add some regular items to the left side of the bar, where
+# only the properties deviating from the current defaults need to be set
+sketchybar --add item apple_icon left \
+	   --set apple_icon icon="" icon.color=0xffd4adfc \
+	   --set apple_icon icon.font="UbuntuMono Nerd Font:Bold:22.0" \
+	   --set apple_icon click_script="osascript -e 'tell application \"System Events\" to keystroke \"q\" using {control down, command down}'"
+
+sketchybar --add item chevron left \
+           --set chevron icon= label.drawing=off \
+           --add item front_app left \
+           --set front_app icon.drawing=off display=$OTHERS script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+# Compact app name for the vertical screen (cut to 10 characters)
+if [ "$VERTICAL" != "none" ]; then
+  sketchybar --add item front_app_v left \
+             --set front_app_v icon.drawing=off display=$VERTICAL label.max_chars=10 \
+                   script="$PLUGIN_DIR/front_app.sh" \
+             --subscribe front_app_v front_app_switched
+fi
+
+# Pomodoro: left click start/pause, right click reset
+sketchybar --add item pomodoro left \
+           --set pomodoro icon="󰔛" script="$PLUGIN_DIR/pomodoro.sh" \
+           --subscribe pomodoro mouse.clicked
+
+# AeroSpace layout of the focused workspace + mode tag (service / resize)
+sketchybar --add event aerospace_layout_change \
+           --add event aerospace_mode_change \
+           --add item layout left \
+           --set layout label.drawing=off script="$PLUGIN_DIR/layout.sh" \
+           --subscribe layout aerospace_workspace_change aerospace_layout_change front_app_switched \
+           --add item aerospace_mode left \
+           --set aerospace_mode drawing=off script="$PLUGIN_DIR/aerospace_mode.sh" \
+                 icon.color=0xff141221 label.color=0xff141221 \
+                 background.color=0xffff79c6 background.corner_radius=6 background.height=20 \
+                 background.drawing=on icon.padding_left=6 label.padding_right=6 \
+           --subscribe aerospace_mode aerospace_mode_change
+
+##### Adding Right Items #####
+# In the same way as the left items we can add items to the right side.
+# Additional position (e.g. center) are available, see:
+# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+# Some items refresh on a fixed cycle, e.g. the clock runs its script once
+# every 10s. Other items respond to events they subscribe to, e.g. the
+# volume.sh script is only executed once an actual change in system audio
+# volume is registered. More info about the event system can be found here:
+# https://felixkratz.github.io/SketchyBar/config/events
+
+sketchybar --add item clock right \
+           --set clock display=$OTHERS update_freq=1 script="$PLUGIN_DIR/clock.sh" \
+           --add item volume right \
+           --set volume script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change \
+           --add item battery right \
+           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+# CPU / RAM mini graphs (right items are laid out right-to-left,
+# so these appear to the left of the battery)
+graph=(
+  graph.color=0xffd4adfc
+  graph.fill_color=0x405c469c
+  graph.line_width=1.0
+  background.height=22
+  background.drawing=on
+  background.color=0x00000000
+  label.width=30
+  icon.font="UbuntuMono Nerd Font:Bold:13.0"
+  icon.padding_right=4
+  label.align=right
+)
+sketchybar --add graph ram right 40 \
+           --set ram "${graph[@]}" display=$OTHERS icon="RAM" update_freq=5 script="$PLUGIN_DIR/ram.sh" \
+           --add graph cpu right 40 \
+           --set cpu "${graph[@]}" display=$OTHERS icon="CPU" update_freq=2 script="$PLUGIN_DIR/cpu.sh"
+
+# Compact versions for the vertical screen: CPU/RAM without graphs,
+# short clock
+if [ "$VERTICAL" != "none" ]; then
+  sketchybar --add item ram_v right \
+             --set ram_v display=$VERTICAL icon="RAM" icon.font="UbuntuMono Nerd Font:Bold:13.0" \
+                   update_freq=5 script="$PLUGIN_DIR/ram.sh" \
+             --add item cpu_v right \
+             --set cpu_v display=$VERTICAL icon="CPU" icon.font="UbuntuMono Nerd Font:Bold:13.0" \
+                   update_freq=2 script="$PLUGIN_DIR/cpu.sh" \
+             --add item clock_v right \
+             --set clock_v display=$VERTICAL update_freq=10 \
+                   script='sketchybar --set $NAME label="$(date +%H:%M)"' \
+             --move clock_v before volume
+fi
+
+# Islands: each group gets its own rounded box
+sketchybar --add bracket app_group apple_icon chevron front_app front_app_v \
+           --set app_group "${ISLAND[@]}" \
+           --add bracket pomodoro_group pomodoro \
+           --set pomodoro_group "${ISLAND[@]}" \
+           --add bracket aerospace_group layout aerospace_mode \
+           --set aerospace_group "${ISLAND[@]}" \
+           --add bracket spaces_group '/space\..*/' \
+           --set spaces_group "${ISLAND[@]}" \
+           --add bracket stats_group cpu ram cpu_v ram_v \
+           --set stats_group "${ISLAND[@]}" \
+           --add bracket power_group battery volume \
+           --set power_group "${ISLAND[@]}" \
+           --add bracket clock_group clock clock_v \
+           --set clock_group "${ISLAND[@]}"
+
+# Gaps between the islands: empty spacer items sitting outside the brackets
+SPACER=(width=6 padding_left=0 padding_right=0 icon.drawing=off label.drawing=off background.drawing=off)
+sketchybar --add item gap_pomodoro left --set gap_pomodoro "${SPACER[@]}" --move gap_pomodoro before pomodoro \
+           --add item gap_layout left --set gap_layout "${SPACER[@]}" --move gap_layout before layout \
+           --add item gap_power right --set gap_power "${SPACER[@]}" --move gap_power after battery \
+           --add item gap_clock right --set gap_clock "${SPACER[@]}" --move gap_clock before volume
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update

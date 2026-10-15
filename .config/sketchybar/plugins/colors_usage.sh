@@ -5,10 +5,10 @@
 # Sets $LINE (solid) and $FILL (transparent) colors.
 usage_color() {
   if [ "$1" -ge "$3" ]; then
-    LINE=0xffff5555; FILL=0x40ff5555   # red
+    LINE=0xffdc2626; FILL=0x40dc2626   # red
   elif [ "$1" -ge "$2" ]; then
-    LINE=0xfff1fa8c; FILL=0x40f1fa8c   # yellow
+    LINE=0xfffbbf24; FILL=0x40fbbf24   # yellow
   else
-    LINE=0xff50fa7b; FILL=0x4050fa7b   # green
+    LINE=0xff10b981; FILL=0x4010b981   # green
   fi
 }

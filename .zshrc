@@ -18,3 +18,7 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# Matte Black colors for fzf and lazygit (bat reads ~/.config/bat/config)
+export FZF_DEFAULT_OPTS="--color=bg:#121212,bg+:#262626,fg:#BEBEBE,fg+:#FFFFFF,hl:#F59E0B,hl+:#F59E0B,border:#333333,header:#8A8A8D,info:#8A8A8D,marker:#10B981,pointer:#F59E0B,prompt:#F59E0B,spinner:#F59E0B,query:#EAEAEA,gutter:#121212"
+export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"

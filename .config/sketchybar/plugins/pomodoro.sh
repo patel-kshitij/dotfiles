@@ -9,9 +9,9 @@ WORK=$((25 * 60))
 BREAK=$((5 * 60))
 STATE="${TMPDIR:-/tmp}/sketchybar_pomodoro"
 
-IDLE_COLOR=0xffd4adfc
-WORK_COLOR=0xffff6b6b
-BREAK_COLOR=0xff7ee787
+IDLE_COLOR=0xffeaeaea
+WORK_COLOR=0xffdc2626
+BREAK_COLOR=0xff10b981
 
 # State: mode (work|break)  status (idle|running|paused)  value
 # value = end time (epoch) while running, seconds left otherwise

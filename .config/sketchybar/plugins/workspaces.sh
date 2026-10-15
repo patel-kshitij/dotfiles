@@ -9,13 +9,13 @@
 source "$CONFIG_DIR/plugins/icon_map.sh"
 
 # Underline colors: focused workspace, visible on another monitor, hidden
-FOCUSED_LINE=0xffd4adfc
-VISIBLE_LINE=0x66d4adfc
-HIDDEN_LINE=0x00d4adfc
+FOCUSED_LINE=0xfff59e0b
+VISIBLE_LINE=0x66f59e0b
+HIDDEN_LINE=0x00f59e0b
 FOCUSED_TEXT=0xffffffff
-OTHER_TEXT=0xff8e7cc3
-ACTIVE_APPS=0xffd4adfc
-INACTIVE_APPS=0x70d4adfc
+OTHER_TEXT=0xff8a8a8d
+ACTIVE_APPS=0xffeaeaea
+INACTIVE_APPS=0x70eaeaea
 
 # AeroSpace numbers monitors in AppKit order; SketchyBar uses its own
 # arrangement order. Build a "aerospace_id sketchybar_id" map, matched by

@@ -22,6 +22,7 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
 
 -- Clear search highlight
 map("n", "<Esc>", "<cmd>nohlsearch<cr>")
+map("n", "<leader>n", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
 -- Keep selection when indenting; move selected lines
 map("x", "<", "<gv")

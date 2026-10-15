@@ -26,7 +26,6 @@ Plug 'airblade/vim-gitgutter'                        " git signs in gutter
 Plug 'tpope/vim-surround'
 Plug 'jiangmiao/auto-pairs'
 Plug 'itchyny/lightline.vim'                         " statusline
-Plug 'ghifarit53/tokyonight-vim'                     " same theme as Neovim
 Plug 'ryanoasis/vim-devicons'                        " must load last
 call plug#end()
 
@@ -59,11 +58,9 @@ if !isdirectory(expand('~/.vim/undo')) | call mkdir(expand('~/.vim/undo'), 'p') 
 let &t_SI = "\e[6 q" | let &t_EI = "\e[2 q"
 
 set termguicolors
-let g:tokyonight_style = 'night'
-let g:tokyonight_enable_italic = 1
-silent! colorscheme tokyonight
+silent! colorscheme matteblack                       " same theme as Neovim (~/.vim/colors)
 let g:lightline = {
-      \ 'colorscheme': 'tokyonight',
+      \ 'colorscheme': 'matteblack',
       \ 'active': { 'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'relativepath', 'modified']] },
       \ 'component_function': { 'gitbranch': 'FugitiveHead' } }
 
@@ -86,6 +83,7 @@ if $PATH !~# '/opt/homebrew/bin' | let $PATH = '/opt/homebrew/bin:' .. $PATH | e
 
 let s:lsp_opts = #{
       \ autoComplete: v:true,
+      \ autoHighlight: v:true,
       \ completionMatcher: 'fuzzy',
       \ showDiagWithVirtualText: v:true,
       \ diagVirtualTextAlign: 'after',

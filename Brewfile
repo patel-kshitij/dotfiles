@@ -4,6 +4,7 @@ tap "homebrew/services"
 tap "nikitabobko/tap"
 tap "wernerturing/multi-delogo"
 # Arduino command-line interface
+brew "bat"
 brew "arduino-cli"
 # Cross-platform make
 brew "cmake"

@@ -11,9 +11,10 @@ BACKUP=~/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)
 LINKS=(
   .zshrc .zprofile .profile .p10k.zsh
   .gitconfig .config/git
-  .vimrc .gvimrc .config/nvim
+  .vimrc .gvimrc .config/nvim .vim/colors/matteblack.vim .vim/autoload/lightline/colorscheme/matteblack.vim
   .aerospace.toml .config/sketchybar
   .config/gh/config.yml .config/neofetch .config/mdless
+  .config/lazygit .config/bat
 )
 
 step() { print -P "\n%F{magenta}==>%f %B$1%b" }
@@ -74,6 +75,10 @@ else
   defaults import com.googlecode.iterm2 $DOTFILES/iterm2/com.googlecode.iterm2.plist
   print "  imported"
 fi
+mkdir -p ~/Library/Application\ Support/iTerm2/DynamicProfiles
+cp $DOTFILES/iterm2/matteblack.json ~/Library/Application\ Support/iTerm2/DynamicProfiles/
+print "  Matte Black profile added (iTerm2 > Settings > Profiles > Matte Black > Other Actions > Set as Default)"
+bat cache --build >/dev/null && print "  bat theme built"
 
 step "Background services"
 brew services start sketchybar >/dev/null && print "  sketchybar started"

@@ -7,6 +7,9 @@
 STATE="${TMPDIR:-/tmp}/sketchybar_displays"
 CURRENT="$(sketchybar --query displays | python3 -c 'import json,sys;print(" ".join(sorted("%s:%dx%d" % (d["DirectDisplayID"], d["frame"]["w"], d["frame"]["h"]) for d in json.load(sys.stdin))))')"
 
+# An empty answer means the query failed; try again on the next event
+[ -n "$CURRENT" ] || exit 0
+
 if [ "$CURRENT" != "$(cat "$STATE" 2>/dev/null)" ]; then
   echo "$CURRENT" > "$STATE"
   # Skip the reload on the first run after the bar itself loaded

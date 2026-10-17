@@ -10,7 +10,7 @@ after-login-command = []
 # SketchyBar itself is started at login by its Homebrew service; here we only
 # reload it once the monitors have had time to connect.
 after-startup-command = [
-    'exec-and-forget borders active_color=0xff3b82f6 inactive_color=0x403b82f6 width=5.0 hidpi=on',
+    'exec-and-forget pkill -x borders; borders active_color=0xff3b82f6 inactive_color=0x403b82f6 width=5.0 hidpi=on',
     'exec-and-forget sleep 5 && sketchybar --reload'
 ]
 # Notify Sketchybar about workspace change

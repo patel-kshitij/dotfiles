@@ -42,12 +42,6 @@ brew "neovim"
 brew "nmap"
 # Open-source, cross-platform JavaScript runtime environment
 brew "node"
-# General-purpose scripting language
-brew "php@8.2"
-# Package compiler and linker metadata toolkit
-brew "pkgconf"
-# Object-relational database system
-brew "postgresql@18", restart_service: :changed, link: true
 # Theme for zsh
 brew "powerlevel10k"
 # Interpreted, interactive, object-oriented programming language
